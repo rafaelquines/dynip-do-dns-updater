@@ -1,16 +1,19 @@
 {
-  "name": "update-digital-ocean-dns",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "do-wrapper": "^3.11.1",
-    "dotenv": "^4.0.0",
-    "public-ip": "^2.3.5"
-  }
+    "name": "dynip-do-dns-updater",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node index.js"
+    },
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "bluebird": "^3.5.0",
+        "do-wrapper": "^3.11.1",
+        "dotenv": "^4.0.0",
+        "public-ip": "^2.3.5",
+        "winston": "^2.3.1"
+    }
 }
