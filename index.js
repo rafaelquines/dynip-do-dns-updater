@@ -2,7 +2,7 @@ require('dotenv').config()
 require('./logger');
 const Util = require('./util');
 
-const multiplier = 1000;
+const multiplier = 60 * 1000;
 
 
 function verifyConfigs() {
@@ -20,7 +20,7 @@ function verifyConfigs() {
         process.env.RECORD_TYPE = 'A';
     }
     if (!process.env.INTERVAL) {
-        process.env.INTERVAL = 60;
+        process.env.INTERVAL = 1;
     }
     return errors;
 }
@@ -68,6 +68,12 @@ function run() {
 
 var verifyConfigs = verifyConfigs();
 if (verifyConfigs.length == 0) {
+    console.log('Configs: ');
+    console.log('\t- DO_API_KEY: ' + process.env.DO_API_KEY);
+    console.log('\t- DOMAIN_NAME: ' + process.env.DOMAIN_NAME);
+    console.log('\t- RECORD_NAME: ' + process.env.RECORD_NAME);
+    console.log('\t- DOMAIN_TYPE: ' + process.env.RECORD_TYPE);
+    console.log('\t- INTERVAL: ' + process.env.INTERVAL);
     run();
 } else {
     console.error("The following environment variables are missing:");
