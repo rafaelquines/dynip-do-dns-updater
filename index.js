@@ -20,7 +20,7 @@ function verifyConfigs() {
         process.env.RECORD_TYPE = 'A';
     }
     if (!process.env.INTERVAL) {
-        process.env.INTERVAL = 1;
+        process.env.INTERVAL = 60;
     }
     return errors;
 }
