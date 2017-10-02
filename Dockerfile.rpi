@@ -1,7 +1,5 @@
 FROM arm32v7/node:slim
 
-RUN [ "cross-build-start" ]
-
 # Create app directory
 RUN mkdir -p /app
 WORKDIR /app
@@ -9,8 +7,6 @@ WORKDIR /app
 # Install app dependencies
 COPY package.json /app/
 RUN npm install
-
-RUN [ "cross-build-end" ]  
 
 # Bundle app source
 COPY . /app
