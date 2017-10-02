@@ -4,6 +4,27 @@ const Util = require('./util');
 
 const multiplier = 1000;
 
+
+function verifyConfigs() {
+    var errors = [];
+    if (!process.env.DO_API_KEY) {
+        errors.push("DO_API_KEY");
+    }
+    if (!process.env.DOMAIN_NAME) {
+        errors.push("DOMAIN_NAME");
+    }
+    if (!process.env.RECORD_NAME) {
+        errors.push("RECORD_NAME");
+    }
+    if (!process.env.RECORD_TYPE) {
+        process.env.RECORD_TYPE = 'A';
+    }
+    if (!process.env.INTERVAL) {
+        process.env.INTERVAL = 60;
+    }
+    return errors;
+}
+
 function run() {
     console.log("Getting public IP...");
     Util.getMyIp()
@@ -45,4 +66,13 @@ function run() {
         });
 }
 
-run();
+var verifyConfigs = verifyConfigs();
+if (verifyConfigs.length == 0) {
+    run();
+} else {
+    console.error("The following environment variables are missing:");
+    verifyConfigs.forEach(function(element) {
+        console.error("\t- " + element);
+    });
+    process.exit(1);
+}
