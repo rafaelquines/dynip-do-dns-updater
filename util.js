@@ -39,11 +39,11 @@ Util.findDomain = function(domainName) {
     );
 }
 
-Util.findDomainRecord = function(domainName, type, name) {
+Util.findDomainRecord = function(domainName, type, names) {
     return Promise.resolve(Util.listDomainRecords(domainName)
         .then((domainRecords) => {
             if (domainRecords && domainRecords.length > 0)
-                return domainRecords.filter((it) => it.type == type && it.name == name)[0];
+                return domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
             else
                 return null;
         })

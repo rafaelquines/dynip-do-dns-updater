@@ -4,6 +4,7 @@ const Util = require('./util');
 
 const multiplier = 60 * 1000;
 
+var recordNames;
 
 function verifyConfigs() {
     var errors = [];
@@ -38,26 +39,36 @@ function run() {
         }).spread((myIp, domain) => {
             if (domain) {
                 console.log('Domain found');
-                console.log('Finding DNS Record "' + process.env.RECORD_NAME + '.' + domain.name + '" (Type: ' + process.env.RECORD_TYPE + ')');
-                return [myIp, domain, Util.findDomainRecord(domain.name, process.env.RECORD_TYPE, process.env.RECORD_NAME)];
+                console.log('Finding DNS Record [' + recordNames.join(' | ') + '].' + domain.name + '" (Type: ' + process.env.RECORD_TYPE + ')');
+                return [myIp, domain, Util.findDomainRecord(domain.name, process.env.RECORD_TYPE, recordNames)];
             } else {
                 throw new Error("Unable to find domain");
             }
-        }).spread((myIp, domain, dnsRecord) => {
-            if (dnsRecord) {
-                console.log('DNS Record found');
-                if (dnsRecord.data != myIp) {
-                    console.log('Updating DNS "' + dnsRecord.name + '.' + domain.name + '" to "' + myIp + '"');
-                    return [myIp, domain, dnsRecord, Util.updateDomainRecord(domain.name, dnsRecord.id, { data: myIp })];
-                } else
-                    return [myIp, domain, dnsRecord, -1]
+        }).spread((myIp, domain, dnsRecords) => {
+            if (dnsRecords && dnsRecords.length > 0) {
+                recordNames.forEach(
+                    (recordName) => {
+                        var found = dnsRecords.filter((i) => i.name == recordName)[0];
+                        if (!found)
+                            console.log(recordName + '.' + domain.name + ' not found');
+                    }
+                );
+                var promises = [];
+                dnsRecords.forEach((dnsRecord) => {
+                    if (dnsRecord.data != myIp) {
+                        console.log('Updating ' + dnsRecord.name + '.' + domain.name + ' to ' + myIp);
+                        promises.push(Util.updateDomainRecord(domain.name, dnsRecord.id, { data: myIp }));
+                    } else {
+                        console.log(dnsRecord.name + '.' + domain.name + ' doesn\'t need to be updated');
+                    }
+                });
+                return [myIp, domain, dnsRecords, Promise.all(promises)];
             } else
                 throw new Error("Unable to find DNS Record");
-        }).spread((myIp, domain, dnsRecord, updated) => {
-            if (updated == -1)
-                console.log("Nothing to do. Update is not necessary.");
-            else
-                console.log('DNS record updated: "' + dnsRecord.name + '.' + domain.name + '" => "' + updated.data + '"');
+        }).spread((myIp, domain, dnsRecord, updateds) => {
+            updateds.forEach((item) => {
+                console.log('Updated ' + item.name + '.' + domain.name + ' => ' + item.data);
+            });
             setTimeout(run, process.env.INTERVAL * multiplier);
         })
         .catch((e) => {
@@ -68,10 +79,11 @@ function run() {
 
 var verifyConfigs = verifyConfigs();
 if (verifyConfigs.length == 0) {
+    recordNames = process.env.RECORD_NAME.split(',');
     console.log('Configs: ');
     console.log('\t- DO_API_KEY: ' + process.env.DO_API_KEY);
     console.log('\t- DOMAIN_NAME: ' + process.env.DOMAIN_NAME);
-    console.log('\t- RECORD_NAME: ' + process.env.RECORD_NAME);
+    console.log('\t- RECORD_NAME: ' + recordNames.join(','));
     console.log('\t- DOMAIN_TYPE: ' + process.env.RECORD_TYPE);
     console.log('\t- INTERVAL: ' + process.env.INTERVAL);
     run();
