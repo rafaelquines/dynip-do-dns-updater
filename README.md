@@ -8,6 +8,7 @@ To run locally, create a .env file with the following variables:
 - RECORD_TYPE => DNS Record Type (Default: A)
 - RECORD_NAME => Your DNS Records separated by commas (home,server,office,etc).
 This config will update each DNS with your dynamic ip
-- INTERVAL => Time interval in seconds to verify ip and updates DNS record (Default: 60)
+- INTERVAL => Time interval in minutes to verify ip and updates DNS record (Default: 60)
+- LOCAL_INTERFACE => Update DNS record with internal IP from this interface name (eth0, eth1, etc...)
 
 or use my docker image: https://hub.docker.com/r/rafaelquines/dynip-do-dns-updater/
