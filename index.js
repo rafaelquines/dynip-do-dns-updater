@@ -1,10 +1,12 @@
 require('dotenv').config()
 require('./logger');
+
 const Util = require('./util');
 
 const multiplier = 60 * 1000;
 
 var recordNames;
+var localInterface = false;
 
 function verifyConfigs() {
     var errors = [];
@@ -27,15 +29,15 @@ function verifyConfigs() {
 }
 
 function run() {
-    console.log("Getting public IP...");
-    Util.getMyIp()
+    console.log("Getting " + (localInterface ? "internal" : "external") + " IP...");
+    Util.getIp(localInterface)
         .then((myIp) => {
             if (myIp) {
                 console.log("IP: " + myIp);
                 console.log("Finding domain \"" + process.env.DOMAIN_NAME + "\"");
                 return [myIp, Util.findDomain(process.env.DOMAIN_NAME)];
             } else
-                throw new Error("Unable to get public IP");
+                throw new Error("Unable to get " + (localInterface ? "internal" : "external") + " IP");
         }).spread((myIp, domain) => {
             if (domain) {
                 console.log('Domain found');
@@ -86,6 +88,15 @@ if (verifyConfigs.length == 0) {
     console.log('\t- RECORD_NAME: ' + recordNames.join(','));
     console.log('\t- DOMAIN_TYPE: ' + process.env.RECORD_TYPE);
     console.log('\t- INTERVAL: ' + process.env.INTERVAL);
+    if (process.env.LOCAL_INTERFACE) {
+        console.log('\t- LOCAL_INTERFACE: ' + process.env.LOCAL_INTERFACE);
+        if (Util.existsLocalInterface(process.env.LOCAL_INTERFACE))
+            localInterface = true;
+        else {
+            console.error("Local interface " + process.env.LOCAL_INTERFACE + " not found.");
+            process.exit(1);
+        }
+    }
     run();
 } else {
     console.error("The following environment variables are missing:");
