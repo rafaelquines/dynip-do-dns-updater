@@ -6,9 +6,9 @@ var ifaces = os.networkInterfaces();
 
 var Util = Util || {};
 
-Util.api = new DigitalOcean(process.env.DO_API_KEY, Util.pageSize);
-
 Util.pageSize = 100;
+
+Util.api = new DigitalOcean(process.env.DO_API_KEY, Util.pageSize);
 
 Util.getIp = function(localInterface) {
     if (localInterface) {
@@ -33,6 +33,7 @@ Util.listDomains = function() {
 Util.listDomainRecords = function(domainName) {
     return Promise.resolve(Util.api.domainRecordsGetAll(domainName)
         .then((data) => {
+            console.log("Data: ", data);
             return data.body.domain_records;
         })
     );
