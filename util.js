@@ -33,7 +33,6 @@ Util.listDomains = function() {
 Util.listDomainRecords = function(domainName) {
     return Promise.resolve(Util.api.domainRecordsGetAll(domainName)
         .then((data) => {
-            console.log("Data: ", data);
             return data.body.domain_records;
         })
     );
