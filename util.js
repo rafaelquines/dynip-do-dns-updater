@@ -2,7 +2,6 @@ const publicIp = require('public-ip');
 var Promise = require("bluebird");
 var DigitalOcean = require('do-wrapper');
 var os = require('os');
-var ifaces = os.networkInterfaces();
 
 var Util = Util || {};
 
@@ -69,6 +68,7 @@ Util.updateDomainRecord = function(domainName, id, body) {
 }
 
 Util.existsLocalInterface = function(interface) {
+    const ifaces = os.networkInterfaces();
     var ret = false;
     Object.keys(ifaces).forEach(function(ifName) {
         if (ifName == interface)
@@ -78,6 +78,7 @@ Util.existsLocalInterface = function(interface) {
 }
 
 Util.getInternalIp = function() {
+    const ifaces = os.networkInterfaces();
     var ip = null;
     Object.keys(ifaces).forEach(function(ifName) {
         ifaces[ifName].forEach(function(iface) {
