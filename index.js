@@ -42,7 +42,7 @@ function run() {
             if (domain) {
                 console.log('Domain found');
                 console.log('Finding DNS Record [' + recordNames.join(' | ') + '].' + domain.name + ' (Type: ' + process.env.RECORD_TYPE + ')');
-                return [myIp, domain, Util.findDomainRecord(domain.name, process.env.RECORD_TYPE, recordNames)];
+                return [myIp, domain, Util.findDomainRecord(domain.name, process.env.RECORD_TYPE, recordNames, myIp)];
             } else {
                 throw new Error("Unable to find domain");
             }

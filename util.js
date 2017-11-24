@@ -49,12 +49,18 @@ Util.findDomain = function(domainName) {
     );
 }
 
-Util.findDomainRecord = function(domainName, type, names) {
+Util.findDomainRecord = function(domainName, type, names, myIp) {
     return Promise.resolve(Util.listDomainRecords(domainName)
         .then((domainRecords) => {
-            if (domainRecords && domainRecords.length > 0)
-                return domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
-            else
+            if (domainRecords && domainRecords.length > 0) {
+                var findRecords = domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
+                if (findRecords.length == names.length) {
+                    return findRecords;
+                } else {
+
+                }
+                // return domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
+            } else
                 return null;
         })
     );
