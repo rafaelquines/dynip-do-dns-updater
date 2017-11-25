@@ -48,13 +48,24 @@ Util.findDomain = function(domainName) {
     );
 }
 
-Util.findDomainRecord = function(domainName, type, names) {
+Util.findDomainRecord = function(domainName, type, names, myIp) {
     return Promise.resolve(Util.listDomainRecords(domainName)
         .then((domainRecords) => {
-            if (domainRecords && domainRecords.length > 0)
-                return domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
-            else
-                return null;
+            var promisesCreate = [];
+            names.forEach((n) => {
+                var found = domainRecords.filter((it) => it.type == type && it.name == n).length > 0;
+                if (!found) {
+                    promisesCreate.push(Util.createRecord(domainName, n, myIp));
+                }
+            });
+            return [domainRecords, Promise.all(promisesCreate)];
+        }).spread((domainRecords, creates) => {
+            if (creates && creates.length > 0) {
+                creates.forEach((item) => {
+                    domainRecords.push(item.body.domain_record);
+                });
+            }
+            return domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
         })
     );
 }
@@ -83,7 +94,6 @@ Util.getInternalIp = function() {
     Object.keys(ifaces).forEach(function(ifName) {
         ifaces[ifName].forEach(function(iface) {
             if ('IPv4' !== iface.family || iface.internal !== false) {
-                // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
                 return;
             }
             if (ifName == process.env.LOCAL_INTERFACE)
@@ -92,6 +102,17 @@ Util.getInternalIp = function() {
 
     });
     return ip;
+}
+
+Util.createRecord = function(domain, recordName, ip) {
+    console.log('Creating DNS Record ' + recordName + '.' + domain + '');
+    const type = process.env.RECORD_TYPE;
+    return Util.api.domainRecordsCreate(domain, {
+        type: type,
+        name: recordName,
+        data: ip,
+        ttl: 3600
+    });
 }
 
 module.exports = Util;

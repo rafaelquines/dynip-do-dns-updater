@@ -42,19 +42,12 @@ function run() {
             if (domain) {
                 console.log('Domain found');
                 console.log('Finding DNS Record [' + recordNames.join(' | ') + '].' + domain.name + ' (Type: ' + process.env.RECORD_TYPE + ')');
-                return [myIp, domain, Util.findDomainRecord(domain.name, process.env.RECORD_TYPE, recordNames)];
+                return [myIp, domain, Util.findDomainRecord(domain.name, process.env.RECORD_TYPE, recordNames, myIp)];
             } else {
                 throw new Error("Unable to find domain");
             }
         }).spread((myIp, domain, dnsRecords) => {
             if (dnsRecords && dnsRecords.length > 0) {
-                recordNames.forEach(
-                    (recordName) => {
-                        var found = dnsRecords.filter((i) => i.name == recordName)[0];
-                        if (!found)
-                            console.log(recordName + '.' + domain.name + ' not found');
-                    }
-                );
                 var promises = [];
                 dnsRecords.forEach((dnsRecord) => {
                     if (dnsRecord.data != myIp) {
