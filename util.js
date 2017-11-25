@@ -117,7 +117,7 @@ Util.getInternalIp = function() {
 }
 
 Util.createRecord = function(domain, recordName, ip) {
-    console.log('Creating ' + recordName + '.' + domain + '');
+    console.log('Creating DNS Record ' + recordName + '.' + domain + '');
     const type = process.env.RECORD_TYPE;
     return Util.api.domainRecordsCreate(domain, {
         type: type,
