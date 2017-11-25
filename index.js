@@ -48,13 +48,13 @@ function run() {
             }
         }).spread((myIp, domain, dnsRecords) => {
             if (dnsRecords && dnsRecords.length > 0) {
-                recordNames.forEach(
-                    (recordName) => {
-                        var found = dnsRecords.filter((i) => i.name == recordName)[0];
-                        if (!found)
-                            console.log(recordName + '.' + domain.name + ' not found');
-                    }
-                );
+                // recordNames.forEach(
+                //     (recordName) => {
+                //         var found = dnsRecords.filter((i) => i.name == recordName)[0];
+                //         if (!found)
+                //             console.log(recordName + '.' + domain.name + ' not found');
+                //     }
+                // );
                 var promises = [];
                 dnsRecords.forEach((dnsRecord) => {
                     if (dnsRecord.data != myIp) {

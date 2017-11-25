@@ -52,16 +52,33 @@ Util.findDomain = function(domainName) {
 Util.findDomainRecord = function(domainName, type, names, myIp) {
     return Promise.resolve(Util.listDomainRecords(domainName)
         .then((domainRecords) => {
-            if (domainRecords && domainRecords.length > 0) {
-                var findRecords = domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
-                if (findRecords.length == names.length) {
-                    return findRecords;
-                } else {
-
+            var promisesCreate = [];
+            names.forEach((n) => {
+                var found = domainRecords.filter((it) => it.type == type && it.name == n).length > 0;
+                if (!found) {
+                    promisesCreate.push(Util.createRecord(domainName, n, myIp));
                 }
-                // return domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
-            } else
-                return null;
+            });
+            return [domainRecords, Promise.all(promisesCreate)];
+            // if (domainRecords && domainRecords.length > 0) {
+            //     var findRecords = domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
+            //     if (findRecords.length == names.length) {
+            //         return findRecords;
+            //     } else {
+
+            //     }
+            //     // return domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
+            // } else
+            //     return null;
+        }).spread((domainRecords, creates) => {
+            // console.log(creates);
+            // console.log(domainRecords);
+            if (creates && creates.length > 0) {
+                creates.forEach((item) => {
+                    domainRecords.push(item.body.domain_record);
+                });
+            }
+            return domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
         })
     );
 }
@@ -97,6 +114,17 @@ Util.getInternalIp = function() {
 
     });
     return ip;
+}
+
+Util.createRecord = function(domain, recordName, ip) {
+    console.log('Creating ' + recordName + '.' + domain + '');
+    const type = process.env.RECORD_TYPE;
+    return Util.api.domainRecordsCreate(domain, {
+        type: type,
+        name: recordName,
+        data: ip,
+        ttl: 3600
+    });
 }
 
 module.exports = Util;
