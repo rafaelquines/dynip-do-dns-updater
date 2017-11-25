@@ -60,19 +60,7 @@ Util.findDomainRecord = function(domainName, type, names, myIp) {
                 }
             });
             return [domainRecords, Promise.all(promisesCreate)];
-            // if (domainRecords && domainRecords.length > 0) {
-            //     var findRecords = domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
-            //     if (findRecords.length == names.length) {
-            //         return findRecords;
-            //     } else {
-
-            //     }
-            //     // return domainRecords.filter((it) => it.type == type && names.indexOf(it.name) != -1);
-            // } else
-            //     return null;
         }).spread((domainRecords, creates) => {
-            // console.log(creates);
-            // console.log(domainRecords);
             if (creates && creates.length > 0) {
                 creates.forEach((item) => {
                     domainRecords.push(item.body.domain_record);
@@ -105,7 +93,6 @@ Util.getInternalIp = function() {
     Object.keys(ifaces).forEach(function(ifName) {
         ifaces[ifName].forEach(function(iface) {
             if ('IPv4' !== iface.family || iface.internal !== false) {
-                // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
                 return;
             }
             if (ifName == process.env.LOCAL_INTERFACE)
