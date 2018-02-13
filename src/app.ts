@@ -1,9 +1,8 @@
-import { DomainRecord } from './models/DomainRecord';
 import * as logger from './lib/logger';
 import { Promise } from 'bluebird';
 import * as dotenv from 'dotenv';
 dotenv.config();
-import { Domain } from './models';
+import { Domain, DomainRecord } from './models';
 import { Util } from './lib/util';
 const multiplier = 60 * 1000;
 var recordNames: Array<string>;

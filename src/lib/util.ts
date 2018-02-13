@@ -1,5 +1,4 @@
-import { DomainRecord } from './../models/DomainRecord';
-import { Domain } from './../models/Domain';
+import { Domain, DomainRecord } from './../models';
 import DigitalOcean = require('do-wrapper');
 import os = require('os');
 import * as publicIp from 'public-ip';

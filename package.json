@@ -2,10 +2,12 @@
     "name": "dynip-do-dns-updater",
     "version": "2.0.0",
     "description": "",
-    "main": "index.js",
+    "main": "app.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node dist/index.js"
+        "build": "gulp",
+        "start": "node app.js",
+        "start:dev": "node dist/app.js"
     },
     "license": "MIT",
     "dependencies": {
@@ -25,6 +27,9 @@
         "@types/dotenv": "^4.0.2",
         "@types/node": "^9.4.5",
         "@types/public-ip": "^2.3.0",
-        "@types/winston": "^2.3.8"
+        "@types/winston": "^2.3.8",
+        "gulp": "^3.9.1",
+        "gulp-typescript": "^4.0.1",
+        "typescript": "^2.7.1"
     }
 }
