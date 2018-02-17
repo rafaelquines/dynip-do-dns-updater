@@ -97,6 +97,11 @@ if (configsRes.length === 0) {
         }
     }
     run();
+
+
+
+
+    
 } else {
     logger.error("The following environment variables are missing:");
     configsRes.forEach((element) => {
