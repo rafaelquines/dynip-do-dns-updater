@@ -7,10 +7,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 }
 const winston = __importStar(require("winston"));
-let logger = new winston.Logger();
+const logger = new winston.Logger();
 logger.add(winston.transports.Console, {
     colorize: true,
+    level: "info",
     timestamp: true,
-    level: 'info'
 });
 module.exports = logger;
