@@ -1,5 +1,5 @@
-export interface Domain {
+export interface IDomain {
     name: string;
     ttl: number;
-    zone_file: string
+    zone_file: string;
 }

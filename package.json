@@ -1,11 +1,12 @@
 {
     "name": "dynip-do-dns-updater",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "",
     "main": "app.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "gulp",
+        "lint": "tslint src/**/*.ts",
         "start": "node app.js",
         "start:dev": "node dist/app.js"
     },
@@ -30,6 +31,7 @@
         "@types/winston": "^2.3.8",
         "gulp": "^3.9.1",
         "gulp-typescript": "^4.0.1",
+        "tslint": "^5.9.1",
         "typescript": "^2.7.1"
     }
 }

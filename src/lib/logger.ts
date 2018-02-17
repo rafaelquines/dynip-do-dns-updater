@@ -1,11 +1,11 @@
-import * as winston from 'winston';
-import * as util from 'util';
+import * as util from "util";
+import * as winston from "winston";
 
-let logger = new winston.Logger();
+const logger = new winston.Logger();
 logger.add(winston.transports.Console, {
     colorize: true,
+    level: "info",
     timestamp: true,
-    level: 'info'
 });
 
 export = logger;

@@ -1,2 +1,2 @@
-export * from './domain';
-export * from './domain-record';
+export * from "./domain";
+export * from "./domain-record";

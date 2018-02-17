@@ -1,4 +1,4 @@
-export interface DomainRecord {
+export interface IDomainRecord {
     id: number;
     type: string;
     name: string;
