@@ -57,7 +57,7 @@ const run = () => {
                         logger.info("Updating " + dnsRecord.name + "." + domain.name + " to " + myIp);
                         promises.push(Util.updateDomainRecord(domain.name, dnsRecord.id, { data: myIp }));
                     } else {
-                        logger.info(dnsRecord.name + "." + domain.name + " doesn\"t need to be updated");
+                        logger.info(dnsRecord.name + "." + domain.name + " doesn\'t need to be updated");
                     }
                 });
                 return [myIp, domain, dnsRecords, Promise.all(promises)];
