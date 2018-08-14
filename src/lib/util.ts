@@ -1,5 +1,4 @@
-import * as Bluebird from "bluebird";
-import DigitalOcean = require("do-wrapper");
+import DigitalOcean from "do-wrapper";
 import os = require("os");
 import * as publicIp from "public-ip";
 import { IDomain, IDomainRecord } from "./../models";
@@ -30,7 +29,7 @@ export class Util {
     // DigitalOcean Resources
 
     public static listDomains = () => {
-        const promise = new Bluebird.Promise((resolve, reject) => {
+        const promise = new Promise((resolve, reject) => {
             Util.api.domainsGetAll({}, (err, response, body) => {
                 if (err) {
                     reject(err);
@@ -46,7 +45,7 @@ export class Util {
     }
 
     public static listDomainRecords = (domainName: string) => {
-        const promise = new Bluebird.Promise((resolve, reject) => {
+        const promise = new Promise((resolve, reject) => {
             Util.api.domainRecordsGetAll(domainName, {}, (err, response, body) => {
                 if (err) {
                     reject(err);
@@ -75,7 +74,7 @@ export class Util {
     public static createRecord = (domainName: string, recordName: string, ip: string) => {
         logger.info("Creating DNS Record " + recordName + "." + domainName);
         const type = process.env.RECORD_TYPE;
-        const promise = new Bluebird.Promise((resolve, reject) => {
+        const promise = new Promise((resolve, reject) => {
             Util.api.domainRecordsCreate(domainName, {
                 data: ip,
                 name: recordName,
@@ -92,30 +91,27 @@ export class Util {
         return promise;
     }
 
-    public static findDomainRecord = (domainName: string, type: string, names: string[], myIp: string) => {
-        return Util.listDomainRecords(domainName)
-            .then((domainRecords: IDomainRecord[]) => {
-                const promisesCreate: any[] = [];
-                names.forEach((n) => {
-                    const found = domainRecords.filter((it: IDomainRecord) => it.type === type &&
-                        it.name === n).length > 0;
-                    if (!found) {
-                        promisesCreate.push(Util.createRecord(domainName, n, myIp));
-                    }
-                });
-                return [domainRecords, Bluebird.Promise.all(promisesCreate)];
-            }).spread((domainRecords, creates: any[]) => {
-                if (creates && creates.length > 0) {
-                    creates.forEach((item) => {
-                        domainRecords.push(item.body.domain_record);
-                    });
-                }
-                return domainRecords.filter((it) => it.type === type && names.indexOf(it.name) !== -1);
+    public static findDomainRecord = async (domainName: string, type: string, names: string[], myIp: string) => {
+        const domainRecords = await Util.listDomainRecords(domainName) as IDomainRecord[];
+        const promisesCreate: any[] = [];
+        names.forEach((n) => {
+            const found = domainRecords.filter((it: IDomainRecord) => it.type === type &&
+                it.name === n).length > 0;
+            if (!found) {
+                promisesCreate.push(Util.createRecord(domainName, n, myIp));
+            }
+        });
+        const creates = await Promise.all(promisesCreate);
+        if (creates && creates.length > 0) {
+            creates.forEach((item) => {
+                domainRecords.push(item.body.domain_record);
             });
+        }
+        return domainRecords.filter((it) => it.type === type && names.indexOf(it.name) !== -1);
     }
 
     public static updateDomainRecord = (domainName: string, id: number, body: any) => {
-        const promise = new Bluebird.Promise((resolve, reject) => {
+        const promise = new Promise((resolve, reject) => {
             Util.api.domainRecordsUpdate(domainName, id, body, (err, response, json) => {
                 if (err) {
                     reject(err);
@@ -126,7 +122,7 @@ export class Util {
         });
         return promise
             .then((res: any) => {
-                return res.body.domain_record;
+                return res.json.domain_record;
             });
     }
 
@@ -134,7 +130,7 @@ export class Util {
     private static api: DigitalOcean = new DigitalOcean(process.env.DO_API_KEY as string, Util.pageSize);
 
     private static getExternalIp = () => {
-        return Bluebird.Promise.resolve(publicIp.v4());
+        return Promise.resolve(publicIp.v4());
     }
 
     private static getInternalIp = () => {
@@ -152,9 +148,9 @@ export class Util {
 
         });
         if (ip) {
-            return Bluebird.Promise.resolve(ip);
+            return Promise.resolve(ip);
         } else {
-            return Bluebird.Promise.reject("No Internal ip");
+            return Promise.reject("No Internal ip");
         }
     }
 }

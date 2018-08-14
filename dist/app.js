@@ -1,13 +1,20 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
     if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
     result["default"] = mod;
     return result;
-}
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const bluebird_1 = require("bluebird");
 const dotenv = __importStar(require("dotenv"));
 const logger = __importStar(require("./lib/logger"));
 dotenv.config();
@@ -34,58 +41,55 @@ const verifyConfigs = () => {
     }
     return errors;
 };
-const run = () => {
-    logger.info("Getting " + (localInterface ? "internal" : "external") + " IP...");
-    util_1.Util.getIp(localInterface)
-        .then((myIp) => {
+const run = () => __awaiter(this, void 0, void 0, function* () {
+    try {
+        logger.info("Getting " + (localInterface ? "internal" : "external") + " IP...");
+        const myIp = yield util_1.Util.getIp(localInterface);
         if (myIp) {
             logger.info("IP: " + myIp);
             logger.info("Finding domain \"" + process.env.DOMAIN_NAME + "\"");
-            return [myIp, util_1.Util.findDomain(process.env.DOMAIN_NAME)];
+            const domain = yield util_1.Util.findDomain(process.env.DOMAIN_NAME);
+            if (domain) {
+                logger.info("Domain found");
+                logger.info("Finding DNS Record [" + recordNames.join(" | ") + "]." + domain.name +
+                    " (Type: " + process.env.RECORD_TYPE + ")");
+                const dnsRecords = yield util_1.Util.findDomainRecord(domain.name, process.env.RECORD_TYPE, recordNames, myIp);
+                if (dnsRecords && dnsRecords.length > 0) {
+                    const promises = [];
+                    dnsRecords.forEach((dnsRecord) => {
+                        if (dnsRecord.data !== myIp) {
+                            logger.info("Updating " + dnsRecord.name + "." + domain.name + " to " + myIp);
+                            promises.push(util_1.Util.updateDomainRecord(domain.name, dnsRecord.id, { data: myIp }));
+                        }
+                        else {
+                            logger.info(dnsRecord.name + "." + domain.name + " doesn\'t need to be updated");
+                        }
+                    });
+                    const updateds = yield Promise.all(promises);
+                    updateds.forEach((item) => {
+                        logger.info("Updated " + item.name + "." + domain.name + " => " + item.data);
+                    });
+                    // tslint:disable-next-line:radix
+                    setTimeout(run, parseInt(process.env.INTERVAL) * multiplier);
+                }
+                else {
+                    throw new Error("Unable to find DNS Record");
+                }
+            }
+            else {
+                throw new Error("Unable to find domain " + process.env.DOMAIN_NAME);
+            }
         }
         else {
             throw new Error("Unable to get " + (localInterface ? "internal" : "external") + " IP");
         }
-    }).spread((myIp, domain) => {
-        if (domain) {
-            logger.info("Domain found");
-            logger.info("Finding DNS Record [" + recordNames.join(" | ") + "]." + domain.name +
-                " (Type: " + process.env.RECORD_TYPE + ")");
-            return [myIp, domain, util_1.Util.findDomainRecord(domain.name, process.env.RECORD_TYPE, recordNames, myIp)];
-        }
-        else {
-            throw new Error("Unable to find domain");
-        }
-    }).spread((myIp, domain, dnsRecords) => {
-        if (dnsRecords && dnsRecords.length > 0) {
-            const promises = [];
-            dnsRecords.forEach((dnsRecord) => {
-                if (dnsRecord.data !== myIp) {
-                    logger.info("Updating " + dnsRecord.name + "." + domain.name + " to " + myIp);
-                    promises.push(util_1.Util.updateDomainRecord(domain.name, dnsRecord.id, { data: myIp }));
-                }
-                else {
-                    logger.info(dnsRecord.name + "." + domain.name + " doesn\"t need to be updated");
-                }
-            });
-            return [myIp, domain, dnsRecords, bluebird_1.Promise.all(promises)];
-        }
-        else {
-            throw new Error("Unable to find DNS Record");
-        }
-    }).spread((myIp, domain, dnsRecord, updateds) => {
-        updateds.forEach((item) => {
-            logger.info("Updated " + item.name + "." + domain.name + " => " + item.data);
-        });
-        // tslint:disable-next-line:radix
-        setTimeout(run, parseInt(process.env.INTERVAL) * multiplier);
-    })
-        .catch((e) => {
+    }
+    catch (e) {
         logger.error(e);
         // tslint:disable-next-line:radix
         setTimeout(run, parseInt(process.env.INTERVAL) * multiplier);
-    });
-};
+    }
+});
 const configsRes = verifyConfigs();
 if (configsRes.length === 0) {
     recordNames = process.env.RECORD_NAME.split(",");
