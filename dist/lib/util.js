@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -24,6 +25,7 @@ const publicIp = __importStar(require("public-ip"));
 const logger = __importStar(require("./logger"));
 class Util {
 }
+exports.Util = Util;
 // IP Resources
 Util.getIp = (localInterface) => {
     if (localInterface) {
@@ -107,7 +109,7 @@ Util.createRecord = (domainName, recordName, ip) => {
     });
     return promise;
 };
-Util.findDomainRecord = (domainName, type, names, myIp) => __awaiter(this, void 0, void 0, function* () {
+Util.findDomainRecord = (domainName, type, names, myIp) => __awaiter(void 0, void 0, void 0, function* () {
     const domainRecords = yield Util.listDomainRecords(domainName);
     const promisesCreate = [];
     names.forEach((n) => {
@@ -166,4 +168,3 @@ Util.getInternalIp = () => {
         return Promise.reject("No Internal ip");
     }
 };
-exports.Util = Util;
