@@ -22,7 +22,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const do_wrapper_1 = __importDefault(require("do-wrapper"));
 const os = require("os");
 const publicIp = __importStar(require("public-ip"));
-const logger = __importStar(require("./logger"));
+const logger_1 = require("./logger");
 class Util {
 }
 exports.Util = Util;
@@ -90,7 +90,7 @@ Util.findDomain = (domainName) => {
     });
 };
 Util.createRecord = (domainName, recordName, ip) => {
-    logger.info("Creating DNS Record " + recordName + "." + domainName);
+    logger_1.logger.info("Creating DNS Record " + recordName + "." + domainName);
     const type = process.env.RECORD_TYPE;
     const promise = new Promise((resolve, reject) => {
         Util.api.domainRecordsCreate(domainName, {

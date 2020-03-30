@@ -6,15 +6,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 const winston = __importStar(require("winston"));
 const myFormat = winston.format.printf((info) => {
     return `${info.timestamp} ${info.level}: ${info.message}`;
 });
-const logger = winston.createLogger({
+exports.logger = winston.createLogger({
+    levels: winston.config.npm.levels,
     format: winston.format.combine(winston.format.colorize(), winston.format.timestamp(), myFormat),
-    level: "info",
     transports: [
         new winston.transports.Console(),
     ],
 });
-module.exports = logger;

@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import * as logger from "./lib/logger";
+import { logger } from "./lib/logger";
 dotenv.config();
 import { Util } from "./lib/util";
 const multiplier = 60 * 1000;

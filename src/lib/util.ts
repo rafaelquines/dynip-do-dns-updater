@@ -2,7 +2,7 @@ import DigitalOcean from "do-wrapper";
 import os = require("os");
 import * as publicIp from "public-ip";
 import { IDomain, IDomainRecord } from "./../models";
-import * as logger from "./logger";
+import { logger } from "./logger";
 
 export class Util {
     // IP Resources
