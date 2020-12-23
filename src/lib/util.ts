@@ -5,7 +5,7 @@ import { IDomain, IDomainRecord } from "./../models";
 import { logger } from "./logger";
 
 export class Util {
-    // IP Resources
+    /// IP Resources
 
     public static getIp = (localInterface: any) => {
         if (localInterface) {
