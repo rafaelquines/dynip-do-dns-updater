@@ -5,12 +5,13 @@ const myFormat = winston.format.printf((info) => {
 });
 
 export const logger = winston.createLogger({
+    format:
+        winston.format.combine(
+            winston.format.colorize(),
+            winston.format.timestamp(),
+            myFormat,
+        ),
     levels: winston.config.npm.levels,
-    format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.timestamp(),
-        myFormat,
-    ),
     transports: [
         new winston.transports.Console(),
     ],
