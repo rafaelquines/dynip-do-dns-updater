@@ -1,6 +1,6 @@
 FROM node:alpine
 
-MAINTAINER Rafael Quines <rafaelquines@gmail.com>
+LABEL maintainer="rafaelquines@gmail.com"
 
 # Create app directory
 RUN mkdir -p /app
