@@ -12,3 +12,5 @@ This config will update each DNS with your dynamic ip
 - LOCAL_INTERFACE => Update DNS record with internal IP from this interface name (eth0, eth1, etc...)
 
 or use my docker image: https://hub.docker.com/r/rafaelquines/dynip-do-dns-updater/
+
+In the `sample` directory, you can see the files needed to run the application.
