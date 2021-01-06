@@ -1,0 +1,12 @@
+version: "3"
+services:
+  dynip-do-dns-updater:
+    restart: always
+    container_name: dns_updater
+    network_mode: 'host'
+    environment:
+      - DO_API_KEY=${DO_API_KEY}
+      - DOMAIN_NAME=${DOMAIN}
+      - RECORD_NAME=${RECORD_NAME}
+      - LOCAL_INTERFACE=${LOCAL_INTERFACE}
+    image: rafaelquines/dynip-do-dns-updater
